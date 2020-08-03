@@ -1,0 +1,134 @@
+# @begin FinalProjectCS513Workflow  @desc Overall workflow for Farmer's Market dataset
+# @in farmersmarkets.csv  @uri file://data/farmersmarkets.csv
+
+#     @begin LoadToOpenRefine  @desc Upload farmersmarkets.csv to OpenRefine
+#     @in farmersmarkets.csv  @uri file://input/farmersmarkets.cv
+#     @out MarketName
+#     @out Facebook
+#     @out Website
+#     @out Twitter
+#     @out Youtube
+#     @out OtherMedia
+#     @out County
+#     @out State
+#     @out Organic
+#     @out Season1Date
+#     @end LoadToOpenRefine
+
+#     @begin TrimSpaces @desc Trim leading and trailing white spaces for columns
+#     @in MarketName
+#     @in Facebook
+#     @in Website
+#     @in Twitter
+#     @in Youtube
+#     @in OtherMedia
+#     @in County
+#     @in State
+#     @in Organic
+#     @out TrimmedColumnsUsingOpenRefine
+#     @end TrimSpaces
+
+#     @begin RemoveSpecialCharacters  @desc Use value.replace(/\s+/,' ')
+#     @in MarketName
+#     @in State
+#     @in County
+#     @in Facebook
+#     @in Website
+#     @in Twitter
+#     @in Youtube
+#     @in OtherMedia
+#     @out RemoveSpecialCharactersUsingOpenRefine
+#     @end RemoveSpecialCharactersInMarketName
+
+#     @begin TextFacetAndCluster1  @desc Use Key collision and fingerPrint
+#     @in MarketName
+#     @in County
+#     @out TextFacetAndCluster1
+#     @end TextFacetAndCluster
+
+#     @begin TextFacetAndCluster2  @desc Use Key collision and ngram2
+#     @in MarketName
+#     @in County
+#     @out TextFacetAndCluster2
+#     @end TextFacetAndCluster
+
+#     @begin SplitSeasonDate  @desc Split in to start and end date
+#     @in Season1Date
+#     @out Season1StartDate
+#     @out Season1EndDate
+#     @out Season1DateSplit
+#     @end TextFacetAndCluster
+
+#     @begin UpdateTimeRangesToBeInProperFormat  @desc Use ISODate Format for all time ranges
+#     @in Season1StartDate
+#     @in Season1EndDate
+#     @out UpdatedTimeRangesToBeInProperFormat
+#     @end TextFacetAndCluster
+
+#     @begin UpdateColumnOrganic  @desc Update all - values with NA in Organic column to be in synch in all other columns null data
+#     @in Organic
+#     @out UpdateColumnOrganic
+#     @end TextFacetAndCluster
+
+#     @begin GetProvenanceFromCleanedOpenRefineData  @desc Get Openrefine recipes as provenance.json
+#     @in TrimmedColumnsUsingOpenRefine
+#     @in RemoveSpecialCharactersUsingOpenRefine
+#     @in TextFacetAndCluster1
+#     @in TextFacetAndCluster2
+#     @in Season1DateSplit
+#     @in UpdatedTimeRangesToBeInProperFormat
+#     @in UpdateColumnOrganic
+#     @out provenance.json @uri file://output/openrefine/provenance.json
+#     @out farmersMarketClean.csv @uri file://output/openrefine/farmersmarketCleaned.csv
+#     @end GetProvenanceFromCleandedData
+
+#     @begin VisualizeAndValidateWithTrifacta  @desc Use Trifacta to visualize correct value spread for all columns
+#     @in farmersMarketClean.csv @uri file://output/openrefine/farmersmarketCleaned.csv
+#     @out VisualizeAndValidateWithTrifacta
+#     @end VisualizeAndValidateWithTrifacta
+
+#     @begin LoadCleanedDatatoSqlLite  @desc Use sqlite to create relational schema and check data integrity
+#     @in farmersMarketClean.csv  @uri file://output/openrefine/farmersmarketCleaned.csv
+#     @out FinalProjectFarmersMarkets.db  @uri file://output/sql/FinalProjectFarmersMarket.db
+#     @end LoadCleanedDatatoSqlLite
+
+#     @begin CheckICRulesForLatitudeAndLongitutde  @desc Use sqlite to check data integrity for latitude and longitude is inside an interval
+#     @in FinalProjectFarmersMarkets.db  @uri file://output/sql/FinalProjectFarmersMarket.db
+#     @out latitudeCheckedIcResult
+#     @end CheckICRulesForLatitudeAndLongitutde
+
+#     @begin CheckForProperSeasonDate  @desc Use sqlite to check data integrity if season1 startdate greater than season1 enddate
+#     @in FinalProjectFarmersMarkets.db  @uri file://output/sql/FinalProjectFarmersMarket.db
+#     @out SeasonDateChecked
+#     @end CheckForProperSeasonDate
+
+#     @begin CheckForProperAndNonNullZipCode  @desc Use sqlite to check data integrity if Zipcode has proper non null value
+#     @in FinalProjectFarmersMarkets.db  @uri file://output/sql/FinalProjectFarmersMarket.db
+#     @out ZipCodeChecked
+#     @end CheckForProperAndNonNullZipCode
+
+#     @begin CheckForNonNullSeasonDate  @desc Use sqlite to check data integrity if season1 startdate and season1 enddate is not null
+#     @in FinalProjectFarmersMarkets.db  @uri file://output/sql/FinalProjectFarmersMarket.db
+#     @out SeasonDateNullChecked
+#     @end CheckForNonNullSeasonDate
+
+#     @begin FinalOutpurDBAfterIntegrityChecked
+#     @in latitudeCheckedIcResult
+#     @in SeasonDateChecked
+#     @in ZipCodeChecked
+#     @in SeasonDateNullChecked
+#     @out IcCheckedFinal.db  @uri file://output/sql/IcCheckedFinal.db
+#     @end FinalOutpurDBAfterIntegrityChecked
+
+#     @begin CreateYesWorkFlowFromProvenance  @desc Use Openrefine recipes to get provenance and generate workflow
+#     @in provenance.json  @uri file://output/openrefine/provenance.json
+#     @out openrefineWorkflow.pdf  @uri file://output/workflow/openrefineWorkflow.pdf
+#     @end CreateYesWorkFlowFromProvenance
+
+#     @begin CreateOR2YWToolorkFlowFromProvenance  @desc Use Openrefine recipes to get provenance and generate OR2YWTool workflow
+#     @in provenance.json  @uri file://output/openrefine/provenance.json
+#     @out OR2YWToolWorkflow.pdf  @uri file://output/workflow/OR2YWToolWorkflow.pdf
+#     @end CreateOR2YWToolorkFlowFromProvenance
+
+# @out farmersmarketCleaned.csv  @uri file://output/openrefine/farmersmarketCleaned.csv
+# @end OverallDataCleaning
